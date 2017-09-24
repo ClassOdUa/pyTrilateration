@@ -1,22 +1,32 @@
-def f_tralateration(p_LatA, p_LonA, p_DistA, p_LatB, p_LonB, p_DistB, p_LatC, p_LonC, p_DistC):
-  #assuming elevation = 0
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import math
+import numpy
+
+def f_tralateration(p_LatA, p_LngA, p_DistA, p_LatB, p_LngB, p_DistB, p_LatC, p_LngC, p_DistC):
+
+	#assuming elevation = 0
 	l_earthR = 6372795
 
 	#using authalic sphere
-	#if using an ellipsoid this step is slightly different (TODO: change for elipsoid)
+	#if using an ellipsoid this step is slightly different
+	
+	#TODO: find and change the computation for ellipsoid
+	
 	#Convert geodetic Lat/Long to ECEF xyz
 	#   1. Convert Lat/Long to radians
 	#   2. Convert Lat/Long(radians) to ECEF
-	l_xA = l_earthR *(math.cos(math.radians(p_LatA)) * math.cos(math.radians(p_LonA)))
-	l_yA = l_earthR *(math.cos(math.radians(p_LatA)) * math.sin(math.radians(p_LonA)))
+	l_xA = l_earthR *(math.cos(math.radians(p_LatA)) * math.cos(math.radians(p_LngA)))
+	l_yA = l_earthR *(math.cos(math.radians(p_LatA)) * math.sin(math.radians(p_LngA)))
 	l_zA = l_earthR *(math.sin(math.radians(p_LatA)))
 
-	l_xB = l_earthR *(math.cos(math.radians(p_LatB)) * math.cos(math.radians(p_LonB)))
-	l_yB = l_earthR *(math.cos(math.radians(p_LatB)) * math.sin(math.radians(p_LonB)))
+	l_xB = l_earthR *(math.cos(math.radians(p_LatB)) * math.cos(math.radians(p_LngB)))
+	l_yB = l_earthR *(math.cos(math.radians(p_LatB)) * math.sin(math.radians(p_LngB)))
 	l_zB = l_earthR *(math.sin(math.radians(p_LatB)))
 
-	l_xC = l_earthR *(math.cos(math.radians(p_LatC)) * math.cos(math.radians(p_LonC)))
-	l_yC = l_earthR *(math.cos(math.radians(p_LatC)) * math.sin(math.radians(p_LonC)))
+	l_xC = l_earthR *(math.cos(math.radians(p_LatC)) * math.cos(math.radians(p_LngC)))
+	l_yC = l_earthR *(math.cos(math.radians(p_LatC)) * math.sin(math.radians(p_LngC)))
 	l_zC = l_earthR *(math.sin(math.radians(p_LatC)))
 
 	l_P1 = numpy.array([l_xA, l_yA, l_zA])
@@ -38,8 +48,7 @@ def f_tralateration(p_LatA, p_LonA, p_DistA, p_LatB, p_LonB, p_DistB, p_LatC, p_
 	l_x = (pow(p_DistA,2) - pow(p_DistB,2) + pow(l_d,2))/(2*l_d)
 	l_y = ((pow(p_DistA,2) - pow(p_DistC,2) + pow(l_i,2) + pow(l_j,2))/(2*l_j)) - ((l_i/l_j)*l_x)
 
-	# only one case shown here 
-  # TODO: findout is abs() correct to use here?
+	# only one case shown here
 	l_z = numpy.sqrt(abs(pow(p_DistA,2) - pow(l_x,2) - pow(l_y,2)))
 
 	#l_triPt is an array with ECEF x,y,z of trilateration point
@@ -48,20 +57,22 @@ def f_tralateration(p_LatA, p_LonA, p_DistA, p_LatB, p_LonB, p_DistB, p_LatC, p_
 	#convert back to lat/long from ECEF
 	#convert to degrees
 	l_lat = math.degrees(math.asin(l_triPt[2] / l_earthR))
-	l_lon = math.degrees(math.atan2(l_triPt[1],l_triPt[0]))
+	l_lng = math.degrees(math.atan2(l_triPt[1],l_triPt[0]))
 
-#example date
+	return {'lat':l_lat, 'lng':l_lng}
+
+#example data
 p_LatA = 50.37954
-p_LonA = 30.85162
+p_LngA = 30.85162
 p_DistA = 918
 p_LatB = 50.37896 
-p_LonB = 30.85699
+p_LngB = 30.85699
 p_DistB = 564
 p_LatC = 50.37803 
-p_LonC = 30.86295
+p_LngC = 30.86295
 p_DistC = 322
 
-print f_tralateration(	p_LatA, p_LonA, p_DistA, 
-						p_LatB, p_LonB, p_DistB, 
-						p_LatC, p_LonC, p_DistC
-					)
+print f_tralateration(	p_LatA, p_LngA, p_DistA, 
+			p_LatB, p_LngB, p_DistB, 
+			p_LatC, p_LngC, p_DistC
+		     )
